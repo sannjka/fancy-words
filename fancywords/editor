@@ -1,0 +1,70 @@
+function make_env {
+    local w_p=$1
+    tmux send-keys -t editor:$w_p "export FLASK_APP=run.py" C-m
+    tmux send-keys -t editor:$w_p "export FLASK_DEBUG=1" C-m
+    tmux send-keys -t editor:$w_p "export FLASK_RUN_PORT=5005" C-m
+    tmux send-keys -t editor:$w_p "export FLASK_RUN_HOST=localhost" C-m
+    tmux send-keys -t editor:$w_p "clear" C-m
+}
+
+function activate_env {
+    local w_p=$1
+    local path_=$2
+    tmux send-keys -t editor:$w_p "cd $devdir" C-m
+    tmux send-keys -t editor:$w_p "source ../venv/bin/activate" C-m
+    if [ -n $path_ ]; then
+        tmux send-keys -t editor:$w_p "cd $devdir/$path_" C-m
+    fi
+    tmux send-keys -t editor:$w_p "clear" C-m
+}
+
+devdir='/Volumes/basement/education/FancyWords/fancywords'
+tmux has-session -t editor
+if [[ $? != 0 ]]; then
+    tmux new-session -s editor -n app -d
+    activate_env 1 ""
+    tmux send-keys -t editor 'vim run.py' C-m
+    tmux send-keys -t editor ':tabnew config.py' C-m
+    tmux send-keys -t editor ':tabnew app/__init__.py' C-m
+    tmux send-keys -t editor ':tabnew app/models.py' C-m
+    tmux split-window -h -t editor
+    activate_env 1.2 ""
+    make_env 1.2
+
+    # tests
+    tmux new-window -n tests -t editor    
+    activate_env 2 "tests"
+    for file in $devdir/tests/*.py; do
+        tmux send-keys -t editor:2 "vim $file" C-m
+    done
+    tmux split-window -h -t editor
+    activate_env 2.2 ""
+    make_env 2.2
+    tmux select-pane -t editor:2.1
+
+    # templates
+    tmux new-window -n templates -t editor
+    activate_env 3 "app/templates"
+    tmux send-keys -t editor:3 "vim *.html" C-m
+
+    # static
+    tmux new-window -n static -t editor
+    activate_env 4 "app/static"
+    tmux send-keys -t editor:4 "vim **/*.css" C-m
+
+    # server
+    tmux new-window -n server -t editor
+    activate_env 5 ""
+    make_env 5
+    tmux send-keys -t editor:5 "flask run" C-m
+
+    # flask shell
+    tmux new-window -n flask_shell -t editor
+    activate_env 6 ""
+    make_env 6
+    tmux send-keys -t editor:6 "flask shell" C-m
+
+    tmux select-window -t editor:1
+    tmux select-pane -t editor:1.1
+fi
+tmux attach -t editor
