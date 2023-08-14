@@ -1,5 +1,6 @@
 import reprlib
 from datetime import datetime
+from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 
@@ -67,6 +68,10 @@ class Phrase(db.Model):
     def add_example(self, example):
        self.examples.append(example)
        db.session.commit()
+
+    @classmethod
+    def randome_phrase(cls):
+        return cls.query.order_by(func.random()).first()
 
 wordlist_subscriptions = db.Table('wordlist_subscriptions',
     db.Column('wordlist_id', db.Integer, db.ForeignKey('wordlists.id')),

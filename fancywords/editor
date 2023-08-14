@@ -11,11 +11,18 @@ function activate_env {
     local w_p=$1
     local path_=$2
     tmux send-keys -t editor:$w_p "cd $devdir" C-m
+    delete_swp $w_p
     tmux send-keys -t editor:$w_p "source ../venv/bin/activate" C-m
     if [ -n $path_ ]; then
         tmux send-keys -t editor:$w_p "cd $devdir/$path_" C-m
+        delete_swp $w_p
     fi
     tmux send-keys -t editor:$w_p "clear" C-m
+}
+
+function delete_swp {
+    local w_p=$1
+    tmux send-keys -t editor:$w_p "rm .*.swp" C-m
 }
 
 devdir='/Volumes/basement/education/FancyWords/fancywords'
@@ -34,8 +41,15 @@ if [[ $? != 0 ]]; then
     # tests
     tmux new-window -n tests -t editor    
     activate_env 2 "tests"
+    num=1
     for file in $devdir/tests/*.py; do
-        tmux send-keys -t editor:2 "vim $file" C-m
+        echo $num
+        if [ $num -eq 1 ]; then
+            tmux send-keys -t editor:2 "vim $file" C-m
+        else
+            tmux send-keys -t editor:2 ":tabnew $file" C-m
+        fi
+        (( num++ ))
     done
     tmux split-window -h -t editor
     activate_env 2.2 ""
@@ -45,7 +59,15 @@ if [[ $? != 0 ]]; then
     # templates
     tmux new-window -n templates -t editor
     activate_env 3 "app/templates"
-    tmux send-keys -t editor:3 "vim *.html" C-m
+    num=1
+    for file in $devdir/app/templates/*.html; do
+        if [ $num -eq 1 ]; then
+            tmux send-keys -t editor:3 "vim $file" C-m
+        else
+            tmux send-keys -t editor:3 ":tabnew $file" C-m
+        fi
+        (( num++ ))
+    done
 
     # static
     tmux new-window -n static -t editor
@@ -56,7 +78,7 @@ if [[ $? != 0 ]]; then
     tmux new-window -n server -t editor
     activate_env 5 ""
     make_env 5
-    tmux send-keys -t editor:5 "flask run" C-m
+    tmux send-keys -t editor:5 "flask run --host=192.168.1.69 --port=5005" C-m
 
     # flask shell
     tmux new-window -n flask_shell -t editor

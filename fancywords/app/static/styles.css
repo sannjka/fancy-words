@@ -1,0 +1,36 @@
+
+.phrase-img {
+  height: 125px;
+  width: 125px;
+  margin-right: 20px;
+  margin-bottom: 16px;
+}
+
+div.phrase-thumbnail {
+  position: absolute;
+}
+
+div.phrase-content {
+  margin-left: 130px;
+  min-height: 130px;
+}
+
+.search {
+  margin-top: 8px;
+}
+
+div.search-field {
+  position: absolute;
+  width: 215px;
+  margin-left: 20px;
+}
+
+div.search-button {
+  position: absolute;
+  margin-left: 240px;
+  width: 70px;
+}
+
+ul.left-side {
+  margin-left: 300px;
+}
