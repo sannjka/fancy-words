@@ -19,6 +19,10 @@ div.phrase-content {
   margin-top: 8px;
 }
 
+button.collapse-button {
+  margin-top: -15px;
+}
+
 div.search-field {
   position: absolute;
   width: 215px;

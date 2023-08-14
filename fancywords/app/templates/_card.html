@@ -1,6 +1,9 @@
 <div class="media">
     <div class="phrase-thumbnail">
-        <img class="rounded phrase-img" src="{{ phrase.image_file }}">
+        {% with image_file = url_for('static',
+                             filename='phrase_pictures/'+phrase.image_file) %}
+        <img class="rounded phrase-img" src="{{ image_file }}">
+        {% endwith %}
     </div>
     <div class="phrase-content">
         <h2 class="account-heading">{{ phrase.body }}</h2>
@@ -8,7 +11,7 @@
         <p class="text-secondary">{{ phrase.translation }}</p>
     </div>
     <div>
-        {% if phrase.examples %}
+        {% if phrase.examples.all() %}
             <h3>Examples:</h3>
             <ul>
             {% for example in phrase.examples %}

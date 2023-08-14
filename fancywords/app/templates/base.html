@@ -17,19 +17,24 @@
     <div class="container">
         <div class="navbar-header">
             <form class='search' method="POST" action="">
-                <div class="nav row">
-                    <div class="search-field">
-                    {{ form.search_field(
-                        class="form-control form-control-lg ") }}
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <div class="nav row">
+                        <div class="form-group search-field">
+                        {{ form.search_field(
+                            class="form-control form-control-lg ") }}
+                        </div>
+                        <div class="form-group search-button">
+                        {{ form.submit(class="btn btn-outline-info") }}
+                        </div>
                     </div>
-                    <div class="search-button">
-                    {{ form.submit(class="btn btn-outline-info") }}
-                    </div>
-                </div>
+                </fieldset>
             </form>
-            <button type="button" class="navbar-toggle" 
+            <button type="button" class="navbar-toggle collapse-button" 
                 data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
         </div>
@@ -47,7 +52,7 @@
 
 {% block content %}
 <div class="container">
-    {% for category, message in get_flashed_messages(with_categories=Trur) %}
+    {% for category, message in get_flashed_messages(with_categories=True) %}
         <div class="alert alert-{{ category }}">
             <button type="button" class="close" data-dismiss="alert">&times;
             </button>

@@ -2,7 +2,13 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Arbitrarily selected phrase:</h1>
-    {% include '_card.html' %}
+    {% if phrases %}
+        {% if title %}
+            <h1>{{ title }}</h1>
+        {% endif %}
+        {% for phrase in phrases %}
+            {% include '_card.html' %}
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock page_content %}

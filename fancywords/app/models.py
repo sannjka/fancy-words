@@ -73,6 +73,11 @@ class Phrase(db.Model):
     def randome_phrase(cls):
         return cls.query.order_by(func.random()).first()
 
+    @classmethod
+    def find_phrase(cls, word):
+        pattern = word.strip().lower()
+        return cls.query.filter(Phrase.body.like('%' + pattern + '%')).all()
+
 wordlist_subscriptions = db.Table('wordlist_subscriptions',
     db.Column('wordlist_id', db.Integer, db.ForeignKey('wordlists.id')),
     db.Column('user_is', db.Integer, db.ForeignKey('users.id'))
