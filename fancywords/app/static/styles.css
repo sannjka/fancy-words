@@ -38,3 +38,7 @@ div.search-button {
 ul.left-side {
   margin-left: 300px;
 }
+
+img.round {
+  border-radius: 125px;
+}

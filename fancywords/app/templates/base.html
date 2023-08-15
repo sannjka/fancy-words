@@ -46,9 +46,33 @@
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/">Home</a></li>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                    <li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" 
+                            data-toggle="dropdown" role="button" 
+                            aria-haspopup="true" aria-expanded="false">
+                              {{ current_user.username }}
+                              <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('profile.account') }}">
+                                Account</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Words</a></li>
+                            <li><a href="#">Wordlists</a></li>
+                            <li><a href="#">Comments</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a href="{{ url_for('auth.logout') }}">
+                                    Log Out
+                                </a>
+                            </li>
+                          </ul>
+                        </li>
+                    </li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
                 {% endif %}
             </ul>
         </div>
