@@ -2,9 +2,10 @@ import reprlib
 from datetime import datetime
 from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
+from flask_login import UserMixin
+from . import db, login_manager
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
@@ -12,6 +13,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     avatar_file = db.Column(db.String(20), default='default.jpg',
                             nullable=False)
+    confirmed = db.Column(db.Boolean, default=False)
     member_since = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     phrases = db.relationship('Phrase', backref='author', lazy='dynamic')
@@ -31,6 +33,10 @@ class User(db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 phrase_wordlist_registrations = db.Table('phrase_wordlist_registrations',
     db.Column('phrase_id', db.Integer, db.ForeignKey('phrases.id')),

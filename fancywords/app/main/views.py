@@ -22,6 +22,6 @@ def index(word=''):
         title = 'Arbitrarily selected phrase:'
     if not phrases:
         flash('Nothing found', 'danger')
-    return render_template('index.html', phrases=phrases, form=form,
+    return render_template('index.html', phrases=phrases, form_search=form,
                            title=title)
 

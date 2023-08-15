@@ -16,20 +16,22 @@
 <nav class="navbar navbar-inverse" role="navigation">
     <div class="container">
         <div class="navbar-header">
+            {% if form_search %}
             <form class='search' method="POST" action="">
-                {{ form.hidden_tag() }}
+                {{ form_search.hidden_tag() }}
                 <fieldset class="form-group">
                     <div class="nav row">
                         <div class="form-group search-field">
-                        {{ form.search_field(
+                        {{ form_search.search_field(
                             class="form-control form-control-lg ") }}
                         </div>
                         <div class="form-group search-button">
-                        {{ form.submit(class="btn btn-outline-info") }}
+                        {{ form_search.submit(class="btn btn-outline-info") }}
                         </div>
                     </div>
                 </fieldset>
             </form>
+            {% endif %}
             <button type="button" class="navbar-toggle collapse-button" 
                 data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -43,7 +45,11 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/">Home</a></li>
-                <li><a href="#">Log In</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                {% else %}
+                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
