@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}FW - Phrase-map{% endblock %}
+
+{% block page_content %}
+<div class="media">
+    <div class="media-left">
+        {% with image_file = url_for('static',
+                             filename='phrase_pictures/'+phrase.image_file) %}
+        <img class="rounded phrase-img" src="{{ image_file }}">
+        {% endwith %}
+    </div>
+    <div class="media-body">
+        <h2 class="account-heading">{{ phrase.body }}</h2>
+        {% if phrase.meaning %}
+        <p class="text-secondary">{{ phrase.meaning }}</p>
+        {% endif %}
+        {% if phrase.transcription %}
+        <p class="text-secondary">{{ phrase.transcription }}</p>
+        {% endif %}
+        {% if phrase.translation %}
+        <p class="text-secondary">{{ phrase.translation }}</p>
+        {% endif %}
+        {% if current_user == phrase.author %}
+        <a href="{{ url_for('main.edit_phrase', phrase_id=phrase.id) }}">
+            <button>
+            Edit
+            </button>
+        </a>
+        {% endif %}
+    </div>
+</div>
+<div>
+    {% if examples or current_user == phrase.author %}
+        <h3>Examples:</h3>
+        <ul>
+        {% for example in examples %}
+            <li>
+            <p>{{ example.body }}</p>
+            </li>
+        {% endfor %}
+        {% if current_user == phrase.author %}
+            <li>
+            <a href="{{ url_for('main.add_example', phrase_id=phrase.id) }}">
+            <button>Add example</button></a>
+            </li>
+        {% endif %}
+        </ul>
+    {% endif %}
+</div>
+<div>
+    {% if wordlists %}
+        <h3>Presented in wordlist(s):</h3>
+        <ul>
+        {% for wordlist in wordlists %}
+            <li>
+            <p>{{ wordlist.title }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% if comments or current_user.is_authenticated %}
+<br>
+<h4 id="comments">Comments</h4>
+{% endif %}
+{% if current_user.is_authenticated %}
+<div class="comment-form">
+    {{ wtf.quick_form(comment_form) }}
+</div>
+{% endif %}
+{% include '_comments.html' %}
+<div></div>
+{% endblock page_content %}

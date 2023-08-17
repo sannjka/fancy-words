@@ -20,7 +20,7 @@ def login():
             if next is None or not next.startswith('/'):
                 next = url_for('main.index')
             return redirect(next)
-        flash('Invalid username or password.')
+        flash('Invalid username or password.', 'danger')
     return render_template('auth/login.html', form=form)
 
 @auth.route('/logout', methods=['GET', 'POST'])

@@ -99,8 +99,8 @@ class Phrase(db.Model):
         return f"Phrase('{self.body}', '{self.translation}')"
 
     def add_example(self, example):
-       self.examples.append(example)
-       db.session.commit()
+        self.examples.append(example)
+        db.session.commit()
 
     @classmethod
     def randome_phrase(cls):
@@ -160,3 +160,11 @@ class Example(db.Model):
 
     def __repr__(self):
         return f"Example({reprlib.repr(self.body)})"
+
+    @classmethod
+    def get_relevant_examples(cls, phrase):
+        all_relevant = cls.query.filter(
+            cls.body.like('%' + phrase.body + '%')
+        ).all()
+        already_linked = phrase.examples.all()
+        return set(all_relevant) - set(already_linked)

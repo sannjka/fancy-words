@@ -2,24 +2,18 @@
     <div class="phrase-thumbnail">
         {% with image_file = url_for('static',
                              filename='phrase_pictures/'+phrase.image_file) %}
-        <img class="rounded phrase-img" src="{{ image_file }}">
+        <a href="{{ url_for('main.phrase_map', phrase_id=phrase.id) }}">
+            <img class="rounded phrase-img" src="{{ image_file }}">
+        </a>
         {% endwith %}
     </div>
     <div class="phrase-content">
         <h2 class="account-heading">{{ phrase.body }}</h2>
+        {% if phrase.transcription %}
         <p class="text-secondary">{{ phrase.transcription }}</p>
+        {% endif %}
+        {% if phrase.translation %}
         <p class="text-secondary">{{ phrase.translation }}</p>
-    </div>
-    <div>
-        {% if phrase.examples.all() %}
-            <h3>Examples:</h3>
-            <ul>
-            {% for example in phrase.examples %}
-                <li>
-                <p>{{ example.body }}</p>
-                </li>
-            {% endfor %}
-            </ul>
         {% endif %}
     </div>
 </div>
