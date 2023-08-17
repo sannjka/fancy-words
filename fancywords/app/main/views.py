@@ -29,7 +29,7 @@ def index(word=''):
     if not phrases:
         flash('Nothing found', 'danger')
     return render_template('index.html', phrases=phrases, form_search=form,
-                           title=title)
+                           title=title, word=word)
 
 @main.route('/phrase_map/<int:phrase_id>', methods=['GET', 'POST'])
 def phrase_map(phrase_id):
@@ -105,3 +105,24 @@ def add_example(phrase_id):
     return render_template('add_example.html', form=form, phrase=phrase,
                            suggestions=suggestions)
 
+@main.route('/add_phrase/<word>', methods=['GET', 'POST'])
+@login_required
+def add_phrase(word):
+    form = EditPhraseForm()
+    if form.validate_on_submit():
+        phrase = Phrase(body=form.body.data,
+                        transcription=form.transcription.data,
+                        translation=form.translation.data,
+                        meaning=form.meaning.data,
+                        author=current_user._get_current_object())
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data, 'phrase_pictures')
+            phrase.image_file = picture_file
+        db.session.add(phrase)
+        db.session.commit()
+        return redirect(url_for('main.phrase_map', phrase_id=phrase.id))
+    form.body.data = word
+    image_file = url_for('static',
+                     filename='phrase_pictures/default.jpg')
+    return render_template('edit_phrase.html', form=form, phrase=None,
+                           image_file=image_file, title='Create phrase')

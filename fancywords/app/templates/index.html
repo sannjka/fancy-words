@@ -9,6 +9,10 @@
         {% for phrase in phrases %}
             {% include '_card.html' %}
         {% endfor %}
+    {% elif word and current_user.is_authenticated %}
+        <a href="{{ url_for('main.add_phrase', word=word) }}">
+            <button>Add phrase</button>
+        </a>
     {% endif %}
 </div>
 {% endblock page_content %}
