@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_pagination.html" as macros %}
 
 {% block page_content %}
 <div class="page-header">
@@ -9,10 +10,19 @@
         {% for phrase in phrases %}
             {% include '_card.html' %}
         {% endfor %}
-    {% elif word and current_user.is_authenticated %}
-        <a href="{{ url_for('main.add_phrase', word=word) }}">
+        {% if pagination and pagination.pages > 1 %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'main.phrases',
+                    fragment='') }}
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if current_user.is_authenticated %}
+        {% if word or pagination %}
+        <a href="{{ url_for('main.add_phrase', word=word, next=next) }}">
             <button>Add phrase</button>
         </a>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock page_content %}

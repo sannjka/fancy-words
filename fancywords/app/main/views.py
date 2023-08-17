@@ -1,6 +1,7 @@
 from collections import namedtuple
 from itertools import chain
-from flask import render_template, redirect, url_for, flash
+from flask import (render_template, redirect, url_for, flash, request,
+                   current_app)
 from flask_login import current_user, login_required
 from . import main
 from .. import db
@@ -29,7 +30,8 @@ def index(word=''):
     if not phrases:
         flash('Nothing found', 'danger')
     return render_template('index.html', phrases=phrases, form_search=form,
-                           title=title, word=word)
+                           title=title, word=word, pagination=None,
+                           next=request.url)
 
 @main.route('/phrase_map/<int:phrase_id>', methods=['GET', 'POST'])
 def phrase_map(phrase_id):
@@ -106,8 +108,9 @@ def add_example(phrase_id):
                            suggestions=suggestions)
 
 @main.route('/add_phrase/<word>', methods=['GET', 'POST'])
+@main.route('/add_phrase/', methods=['GET', 'POST'])
 @login_required
-def add_phrase(word):
+def add_phrase(word=''):
     form = EditPhraseForm()
     if form.validate_on_submit():
         phrase = Phrase(body=form.body.data,
@@ -120,9 +123,37 @@ def add_phrase(word):
             phrase.image_file = picture_file
         db.session.add(phrase)
         db.session.commit()
-        return redirect(url_for('main.phrase_map', phrase_id=phrase.id))
+        next = request.args.get('next')
+        if next is None:
+            next = url_for('main.phrase_map', phrase_id=phrase.id)
+        return redirect(next)
     form.body.data = word
     image_file = url_for('static',
                      filename='phrase_pictures/default.jpg')
     return render_template('edit_phrase.html', form=form, phrase=None,
                            image_file=image_file, title='Create phrase')
+
+@main.route('/phrases/<wordlilst_id>')
+@main.route('/phrases')
+@login_required
+def phrases(wordlist_id=None):
+    if wordlist_id:
+        wordlist = WordList.query.get_or_404(wordlist_id)
+        query = wordlist.phrases
+        title = wordlist.title
+    else:
+        query = Phrase.query.filter_by(author=current_user)
+        title = 'my phrases'
+    page = request.args.get('page', 1, type=int)
+    pagination = query.order_by(Phrase.body).paginate(
+        page=page, per_page=current_app.config['PHRASES_PER_PAGE'],
+        error_out=False)
+    phrases = pagination.items
+    return render_template('index.html', phrases=phrases, word = '',
+                           pagination=pagination, title=title,
+                           next=request.url)
+
+@main.route('/wordlists')
+@login_required
+def wordlists():
+    pass

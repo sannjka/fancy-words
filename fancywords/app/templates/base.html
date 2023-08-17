@@ -61,8 +61,10 @@
                                 Account</a>
                             </li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">Words</a></li>
-                            <li><a href="#">Wordlists</a></li>
+                            <li><a href="{{ url_for('main.phrases') }}">
+                                Words</a></li>
+                            <li><a href="{{ url_for('main.wordlists') }}">
+                                Wordlists</a></li>
                             <li><a href="#">Comments</a></li>
                             <li role="separator" class="divider"></li>
                             <li>
