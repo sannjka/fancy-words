@@ -14,6 +14,7 @@ class Config:
     FW_MAIL_SUBJECT_PREFIX = '[Fancy-Words]'
     FW_MAIL_SENDER = 'Facy-Words <fancy-words@fancy-words.ru>'
     PHRASES_PER_PAGE = 2
+    WORDLISTS_PER_PAGE = 2
 
     @staticmethod
     def init_app(app):

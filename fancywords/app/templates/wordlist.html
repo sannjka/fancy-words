@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_pagination.html" as macros %}
+
+{% block title %}FW - Wordlist{% endblock %}
+
+{% block page_content %}
+<div class="media">
+    <div class="media-body">
+        <h2 class="account-heading">{{ wordlist.title }}</h2>
+        {% if current_user == wordlist.author %}
+        <a href="{{ url_for('main.add_update_wordlist', wl_id=wordlist.id) }}">
+            <button>
+            Edit
+            </button>
+        </a>
+        {% endif %}
+    </div>
+</div>
+<div>
+    <h3>Phrases:</h3>
+    <ul>
+    {% for phrase in phrases %}
+        <li>
+            {% include '_card.html' %}
+        </li>
+    {% endfor %}
+    {% if current_user == wordlist.author %}
+        <li>
+        <a href="">
+        <button>
+        {% if form %}
+            Add phrase
+        {% else %}
+            Collapse
+        {% endif %}
+        </button></a>
+        </li>
+    {% endif %}
+    </ul>
+    {% if pagination and pagination.pages > 1 %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'main.phrases',
+                fragment='') }}
+        </div>
+    {% endif %}
+</div>
+<div class="author">
+    {% if current_user != wordlist.author %}
+    <h3>Author:</h3>
+    <div class="media">
+        <div class="media-left">
+            <img class="round account-img" src="{{ image_file }}">
+        </div>
+        <div class="media-body">
+            <h2 class="account-heading">{{ current_user.username }}</h2>
+            <a href="{{ url_for('main.wordlists',
+                user_id=wordlist.author.id) }}">
+                <p class="text-secondary">Wordlists</p>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock page_content %}

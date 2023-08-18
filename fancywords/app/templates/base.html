@@ -63,7 +63,8 @@
                             <li role="separator" class="divider"></li>
                             <li><a href="{{ url_for('main.phrases') }}">
                                 Words</a></li>
-                            <li><a href="{{ url_for('main.wordlists') }}">
+                            <li><a href="{{ url_for('main.wordlists',
+                                user_id=current_user.id) }}">
                                 Wordlists</a></li>
                             <li><a href="#">Comments</a></li>
                             <li role="separator" class="divider"></li>

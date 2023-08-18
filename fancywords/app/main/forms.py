@@ -18,7 +18,6 @@ class EditPhraseForm(FlaskForm):
                         validators=[FileAllowed(['jpg', 'jpeg','png'])])
     submit = SubmitField('Update')
 
-
 class CommentForm(FlaskForm):
     body = StringField('', validators=[DataRequired()])
     submit = SubmitField('Submit')
@@ -31,3 +30,8 @@ class SelectExampleForm(FlaskForm):
     select = SelectField('', validate_choice=False)
     example = TextAreaField('', validators=[Regexp('[A-Za-z\s-]*')])
     submit = SubmitField('Add')
+
+class AddWordListForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(),
+                                             Regexp('[A-Za-z\s-]*')])
+    submit = SubmitField('Update')

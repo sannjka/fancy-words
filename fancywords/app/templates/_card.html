@@ -6,6 +6,9 @@
             <img class="rounded phrase-img" src="{{ image_file }}">
         </a>
         {% endwith %}
+        {% if wordlist %}
+        <a href="#">add</a>
+        {% endif %}
     </div>
     <div class="phrase-content">
         <h2 class="account-heading">{{ phrase.body }}</h2>

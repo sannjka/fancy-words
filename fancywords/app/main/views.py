@@ -5,9 +5,9 @@ from flask import (render_template, redirect, url_for, flash, request,
 from flask_login import current_user, login_required
 from . import main
 from .. import db
-from ..models import Phrase, Comment, Example
+from ..models import Phrase, Comment, Example, WordList, User
 from .forms import (SearchForm, CommentForm, EditPhraseForm, AddExampleForm,
-                    SelectExampleForm)
+                    SelectExampleForm, AddWordListForm)
 from ..profile.utils import save_picture
 
 @main.route('/', methods=['GET', 'POST'])
@@ -133,7 +133,7 @@ def add_phrase(word=''):
     return render_template('edit_phrase.html', form=form, phrase=None,
                            image_file=image_file, title='Create phrase')
 
-@main.route('/phrases/<wordlilst_id>')
+@main.route('/phrases/<wordlist_id>')
 @main.route('/phrases')
 @login_required
 def phrases(wordlist_id=None):
@@ -143,7 +143,7 @@ def phrases(wordlist_id=None):
         title = wordlist.title
     else:
         query = Phrase.query.filter_by(author=current_user)
-        title = 'my phrases'
+        title = 'My phrases'
     page = request.args.get('page', 1, type=int)
     pagination = query.order_by(Phrase.body).paginate(
         page=page, per_page=current_app.config['PHRASES_PER_PAGE'],
@@ -153,7 +153,70 @@ def phrases(wordlist_id=None):
                            pagination=pagination, title=title,
                            next=request.url)
 
+@main.route('/wordlists/<int:user_id>')
 @main.route('/wordlists')
 @login_required
-def wordlists():
-    pass
+def wordlists(user_id=None):
+    if user_id:
+        user = User.query.get_or_404(user_id)
+        query = WordList.query.filter_by(author=user)
+        if user_id == current_user.id:
+            title = 'My wordlists:'
+        else:
+            title = user.username + "'s wordlistst:"
+        show_all = False
+    else:
+        query = WordList.query
+        title = 'Wordlists:'
+        show_all = True
+    page = request.args.get('page', 1, type=int)
+    pagination = query.order_by(WordList.title).paginate(
+        page=page, per_page=current_app.config['WORDLISTS_PER_PAGE'],
+        error_out=False)
+    wordlists = pagination.items
+    return render_template('wordlists.html', wordlists=wordlists,
+                           pagination=pagination, title=title,
+                           show_all=show_all, next=request.url,
+                           user_id=user_id)
+
+@main.route('/wordlist/<wl_id>')
+@login_required
+def wordlist(wl_id):
+    wordlist = WordList.query.get_or_404(wl_id)
+    page = request.args.get('page', 1, type=int)
+    pagination = wordlist.phrases.order_by(Phrase.body).paginate(
+        page=page, per_page=current_app.config['PHRASES_PER_PAGE'],
+        error_out=False)
+    phrases = pagination.items
+    image_file = url_for('static',
+                     filename='profile_pictures/' + current_user.avatar_file)
+    form = SearchForm()
+    if form.validate_on_submit():
+        pass
+    return render_template('wordlist.html', wordlist=wordlist,
+                           phrases=phrases, pagination=pagination,
+                           image_file=image_file)
+
+@main.route('/add_wordlist/<int:wl_id>', methods=['GET', 'POST'])
+@main.route('/add_wordlist', methods=['GET', 'POST'])
+@login_required
+def add_update_wordlist(wl_id=None):
+    form = AddWordListForm()
+    wordlist = None
+    title = 'Create wordlist'
+    if wl_id:
+        wordlist = WordList.query.get(wl_id)
+        title = 'Update wordlist'
+    if form.validate_on_submit():
+        if not wordlist:
+            wordlist = WordList(author=current_user._get_current_object())
+            db.session.add(wordlist)
+        wordlist.title = form.title.data
+        db.session.commit()
+        next = request.args.get('next')
+        if next is None:
+            next = url_for('main.wordlist', wl_id=wordlist.id)
+        return redirect(next)
+    if wordlist:
+        form.title.data = wordlist.title
+    return render_template('edit_wordlist.html', form=form, title=title)

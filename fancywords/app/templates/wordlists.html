@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import "_pagination.html" as macros %}
+
+{% block page_content %}
+<div class="page-header">
+    {% if title %}
+        <h1>{{ title }}</h1>
+    {% endif %}
+    {% if user_id == current_user.id or not user_id %}
+    <div class="wl-tabs">
+        <ul class="nav nav-tabs">
+            <li{% if show_all %} class="active"{% endif %}>
+                <a href={{ url_for('main.wordlists') }}>All</a></li>
+            {% if current_user.is_authenticated %}
+            <li{% if not show_all %} class="active"{% endif %}>
+                <a href={{ url_for('main.wordlists',
+                                   user_id=current_user.id) }}>My</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if wordlists %}
+        <ul>
+        {% for wordlist in wordlists %}
+            <li>
+            <a href="{{ url_for('main.wordlist', wl_id=wordlist.id) }}">
+                {{ wordlist.title }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+        {% if pagination and pagination.pages > 1 %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, 'main.wordlists',
+                    fragment='') }}
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if current_user.is_authenticated %}
+        {% if user_id and user_id == current_user.id %}
+        <a href="{{ url_for('main.add_update_wordlist', next=next) }}">
+            <button>Add wordlist</button>
+        </a>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock page_content %}
