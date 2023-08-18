@@ -5,6 +5,8 @@
 {% block title %}FW - Wordlist{% endblock %}
 
 {% block page_content %}
+<a href="{{ url_for('main.wordlists', user_id=current_user.id) }}">
+    <button>Wordlists</button></a>
 <div class="media">
     <div class="media-body">
         <h2 class="account-heading">{{ wordlist.title }}</h2>
@@ -19,30 +21,57 @@
 </div>
 <div>
     <h3>Phrases:</h3>
-    <ul>
     {% for phrase in phrases %}
-        <li>
+        <div>
             {% include '_card.html' %}
-        </li>
+        </div>
     {% endfor %}
-    {% if current_user == wordlist.author %}
-        <li>
-        <a href="">
-        <button>
-        {% if form %}
-            Add phrase
-        {% else %}
-            Collapse
-        {% endif %}
-        </button></a>
-        </li>
-    {% endif %}
-    </ul>
     {% if pagination and pagination.pages > 1 %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination, 'main.phrases',
+            {% if form %}
+                {% set word = form.search_field.data %}
+            {% else %}
+                {% set word = '' %}
+            {% endif %}
+            {{ macros.pagination_widget(pagination, 'main.wordlist',
+                wl_id=wordlist.id, fill=fill, word=word,
                 fragment='') }}
         </div>
+    {% endif %}
+    {% if current_user == wordlist.author %}
+        {% if fill == "false" %}
+            {% set new_fill = "true" %}
+        {% else %}
+            {% set new_fill = "false" %}
+        {% endif %}
+        <a href="{{ url_for('main.wordlist', wl_id=wordlist.id,
+                            fill=new_fill) }}">
+        <button>
+        {% if fill == "true" %}
+            Collapse
+        {% else %}
+            Add phrase
+        {% endif %}
+        </button></a>
+    {% endif %}
+    {% if current_user == wordlist.author and form %}
+        <div>
+            {{ wtf.quick_form(form) }}
+        </div>
+        <br>
+        {% if found_phrases %}
+            {% for phrase in found_phrases %}
+                {% include '_card.html' %}
+            {% endfor %}
+        {% endif %}
+        {% if current_user.is_authenticated %}
+            {% if form.search_field.data %}
+            <a href="{{ url_for('main.add_phrase',
+                                word=form.search_field.data, next=next) }}">
+                <button>Add phrase</button>
+            </a>
+            {% endif %}
+        {% endif %}
     {% endif %}
 </div>
 <div class="author">

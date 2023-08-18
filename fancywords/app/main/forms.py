@@ -5,7 +5,7 @@ from wtforms import (StringField, SubmitField, TextAreaField,
 from wtforms.validators import DataRequired, Regexp
 
 class SearchForm(FlaskForm):
-    search_field = StringField('Search')
+    search_field = StringField('')
     submit = SubmitField('Search')
 
 class EditPhraseForm(FlaskForm):

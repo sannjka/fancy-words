@@ -179,23 +179,39 @@ def wordlists(user_id=None):
                            show_all=show_all, next=request.url,
                            user_id=user_id)
 
-@main.route('/wordlist/<wl_id>')
+@main.route('/wordlist', methods=['GET', 'POST'])
 @login_required
-def wordlist(wl_id):
-    wordlist = WordList.query.get_or_404(wl_id)
+def wordlist():
+    wl_id = request.args.get('wl_id')
+    fill = request.args.get('fill', 'false')
+    word = request.args.get('word', '')
     page = request.args.get('page', 1, type=int)
+    wordlist = WordList.query.get_or_404(wl_id)
     pagination = wordlist.phrases.order_by(Phrase.body).paginate(
         page=page, per_page=current_app.config['PHRASES_PER_PAGE'],
         error_out=False)
     phrases = pagination.items
     image_file = url_for('static',
                      filename='profile_pictures/' + current_user.avatar_file)
-    form = SearchForm()
-    if form.validate_on_submit():
-        pass
+    form = None
+    found_phrases = None
+    if fill == 'true':
+        form = SearchForm()
+        if form.validate_on_submit():
+            word = form.search_field.data
+            if word:
+                return redirect(url_for('main.wordlist', wl_id=wl_id,
+                                        fill=fill, word=word))
+            else:
+                return redirect(url_for('main.wordlist', wl_id=wl_id,
+                                        fill=fill))
+        form.search_field.data = word
+        if word:
+            found_phrases = Phrase.find_phrase(word)
     return render_template('wordlist.html', wordlist=wordlist,
                            phrases=phrases, pagination=pagination,
-                           image_file=image_file)
+                           image_file=image_file, fill=fill, form=form,
+                           found_phrases=found_phrases, next=request.url)
 
 @main.route('/add_wordlist/<int:wl_id>', methods=['GET', 'POST'])
 @main.route('/add_wordlist', methods=['GET', 'POST'])
@@ -220,3 +236,26 @@ def add_update_wordlist(wl_id=None):
     if wordlist:
         form.title.data = wordlist.title
     return render_template('edit_wordlist.html', form=form, title=title)
+
+@main.route('/add_to_wordlist')
+@login_required
+def add_to_wordlist():
+    phrase_id = request.args.get('phrase_id')
+    wl_id = request.args.get('wl_id')
+    if phrase_id and wl_id:
+        phrase = Phrase.query.get_or_404(phrase_id)
+        wordlist = WordList.query.get_or_404(wl_id)
+        wordlist.add_phrase(phrase)
+    return redirect(request.args.get('next'))
+
+@main.route('/remove_from_wordlist')
+@login_required
+def remove_from_wordlist():
+    phrase_id = request.args.get('phrase_id')
+    wl_id = request.args.get('wl_id')
+    if phrase_id and wl_id:
+        phrase = Phrase.query.get_or_404(phrase_id)
+        wordlist = WordList.query.get_or_404(wl_id)
+        wordlist.remove_phrase(phrase)
+    return redirect(request.args.get('next'))
+

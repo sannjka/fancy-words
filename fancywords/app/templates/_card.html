@@ -1,22 +1,36 @@
 <div class="media">
-    <div class="phrase-thumbnail">
+    <div class="media-left">
         {% with image_file = url_for('static',
                              filename='phrase_pictures/'+phrase.image_file) %}
         <a href="{{ url_for('main.phrase_map', phrase_id=phrase.id) }}">
             <img class="rounded phrase-img" src="{{ image_file }}">
         </a>
         {% endwith %}
-        {% if wordlist %}
-        <a href="#">add</a>
-        {% endif %}
     </div>
-    <div class="phrase-content">
-        <h2 class="account-heading">{{ phrase.body }}</h2>
+    <div class="media-body">
+        <h4 class="media-heading">{{ phrase.body }}</h2>
         {% if phrase.transcription %}
         <p class="text-secondary">{{ phrase.transcription }}</p>
         {% endif %}
         {% if phrase.translation %}
         <p class="text-secondary">{{ phrase.translation }}</p>
+        {% endif %}
+        {% if wordlist %}
+        <div>
+            {% if wordlist not in phrase.wordlists.all() %}
+                <a href="{{ url_for('main.add_to_wordlist',
+                                    phrase_id=phrase.id,
+                                    wl_id=wordlist.id,
+                                    next=next) }}">
+                    <button>add to list</button></a>
+            {% else %}
+                <a href="{{ url_for('main.remove_from_wordlist',
+                                    phrase_id=phrase.id,
+                                    wl_id=wordlist.id,
+                                    next=next) }}">
+                    <button>remove from list</button></a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
 </div>

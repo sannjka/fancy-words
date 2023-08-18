@@ -55,7 +55,9 @@
         <ul>
         {% for wordlist in wordlists %}
             <li>
-            <p>{{ wordlist.title }}</p>
+            <a href="{{ url_for('main.wordlist', wl_id=wordlist.id) }}">
+                <p>{{ wordlist.title }}</p>
+            </a>
             </li>
         {% endfor %}
         </ul>

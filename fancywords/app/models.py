@@ -134,6 +134,11 @@ class WordList(db.Model):
         self.phrases.append(word)
         db.session.commit()
 
+    def remove_phrase(self, word):
+        if word in self.phrases.all():
+            self.phrases.remove(word)
+            db.session.commit()
+
     def subscribe(self, user):
         self.users.append(user)
         db.session.commit()
