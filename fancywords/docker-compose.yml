@@ -1,0 +1,19 @@
+version: '3'
+services:
+  fancywords:
+    build: .
+    volumes:
+      - ./pictures/profile_pictures/:/home/FancyWords/fancywords/static/profile_pictures
+      - ./pictures/phrase_pictures/:/home/FancyWords/fancywords/static/phrase_pictures
+    ports:
+      - "8003:5000"
+    env_file: .env
+    links:
+      - postgres:postgres
+    restart: always
+  postgres:
+    image: postgres:14.3
+    env_file: .env-postgres
+    restart: always
+    volumes:
+      - ./db-data:/var/lib/postgresql/data

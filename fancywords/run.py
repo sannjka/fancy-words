@@ -1,6 +1,12 @@
 import os
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
 from app import create_app, db
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from app.models import User, Phrase, WordList, Comment, Example
 
 app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
@@ -18,3 +24,6 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+@app.cli.command()
+def deploy():
+    upgrade()

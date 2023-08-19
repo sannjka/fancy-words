@@ -10,4 +10,10 @@ venv
 # Environment files
 .env
 .env-mysql
+.env-postgres
 instance
+db-data
+pictures
+*.jpg
+*.jpeg
+*.png

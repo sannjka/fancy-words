@@ -1,4 +1,5 @@
 <div class="media">
+    {% if phrase %}
     <div class="media-left">
         {% with image_file = url_for('static',
                              filename='phrase_pictures/'+phrase.image_file) %}
@@ -33,4 +34,5 @@
         </div>
         {% endif %}
     </div>
+    {% endif %}
 </div>
