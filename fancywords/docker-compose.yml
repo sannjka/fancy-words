@@ -3,8 +3,7 @@ services:
   fancywords:
     build: .
     volumes:
-      - ./pictures/profile_pictures/:/home/FancyWords/fancywords/static/profile_pictures
-      - ./pictures/phrase_pictures/:/home/FancyWords/fancywords/static/phrase_pictures
+      - ./static/:/home/FancyWords/app/static/
     ports:
       - "8003:5000"
     env_file: .env
