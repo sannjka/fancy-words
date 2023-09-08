@@ -42,4 +42,4 @@ def _run_docker_compose():
 
 def _make_nginx_conf():
     run(f'sed "s/SITENAME/{env.host}/g" deploy_tools/nginx.template.conf |'
-         ' sudo tee /etc/nginx/sites-available/{env.host}')
+        f' sudo tee /etc/nginx/sites-available/{env.host}')
