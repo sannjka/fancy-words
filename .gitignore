@@ -3,17 +3,16 @@ env
 .jpynb_checkpoints
 *.pyc
 .DS_Store
-venv
+.venv
 *.swp
 *.log
 *.sqlite
 # Environment files
 .env
-.env-mysql
 .env-postgres
 instance
 db-data
-pictures
 *.jpg
 *.jpeg
 *.png
+static
