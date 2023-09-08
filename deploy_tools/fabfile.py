@@ -14,6 +14,7 @@ def deploy():
         _update_static_files()
         _create_or_update_donenv()
         _run_docker_compose()
+        _make_nginx_conf()
 
 def _create_directory_structure_id_necessary():
     pass
@@ -38,3 +39,7 @@ def _create_or_update_donenv():
 
 def _run_docker_compose():
     sudo('docker-compose up -d --build')
+
+def _make_nginx_conf():
+    run(f'sed "s/SITENAME/{env.host}/g" deploy_tools/nginx.template.conf |'
+         ' sudo tee /etc/nginx/sites-available/{env.host}')
