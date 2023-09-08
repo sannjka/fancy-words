@@ -5,7 +5,7 @@ services:
     volumes:
       - ./static/:/home/FancyWords/app/static/
     ports:
-      - "8003:5000"
+      - "8004:5000"
     env_file: .env
     links:
       - postgres:postgres

@@ -1,0 +1,40 @@
+import getpass
+from fabric.contrib.files import append, exists, sed
+from fabric.api import env, local, run, put, cd, sudo
+
+REPO_URL = 'https://github.com/sannjka/fancy-words.git'
+
+def deploy():
+    site_folder = f'/home/{env.user}/sites/{env.host}'
+    run(f'mkdir -p {site_folder}')
+    with cd(site_folder):
+        _get_latest_source_code(site_folder)
+        _create_directory_structure_id_necessary()
+        _update_virtualenv()
+        _update_static_files()
+        _create_or_update_donenv()
+        _run_docker_compose()
+
+def _create_directory_structure_id_necessary():
+    pass
+
+def _get_latest_source_code(site_folder):
+    if exists('.git'):
+        run('git fetch')
+    else:
+        run(f'git clone {REPO_URL} {site_folder}')
+    current_commit = local('git log -n 1 --format=%H', capture=True)
+    run(f'git reset --hard {current_commit}')
+
+def _update_virtualenv():
+    pass
+
+def _update_static_files():
+    run('cp -r app/static .')
+
+def _create_or_update_donenv():
+    put('../.env', './')
+    put('../.env-postgres', './')
+
+def _run_docker_compose():
+    sudo('docker-compose up -d --build')
