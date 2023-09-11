@@ -16,3 +16,4 @@ db-data
 *.jpeg
 *.png
 static
+*.sql

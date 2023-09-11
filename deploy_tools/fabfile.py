@@ -38,8 +38,12 @@ def _create_or_update_donenv():
     put('../.env-postgres', './')
 
 def _run_docker_compose():
-    sudo('docker-compose up -d --build')
+    run('docker-compose up -d --build')
 
 def _make_nginx_conf():
-    run(f'sed "s/SITENAME/{env.host}/g" deploy_tools/nginx.template.conf |'
+    sudo(f'sed "s/SITENAME/{env.host}/g" deploy_tools/nginx.template.conf |'
         f' sudo tee /etc/nginx/sites-available/{env.host}')
+    if not exists(f'/etc/nginx/sites-enabled/{env.host}'):
+        sudo(f'sudo ln -s /etc/nginx/sites-available/{env.host} '
+            f'/etc/nginx/sites-enabled/{env.host}')
+    sudo('sudo systemctl restart nginx')

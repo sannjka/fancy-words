@@ -4,7 +4,7 @@ while true; do
     if [[ "$?" == "0" ]]; then
         break
     fi
-    echo Deploy command failde, retrying in 5 secs...
+    echo Deploy command failed, retrying in 5 secs...
     sleep 5
 done
-exec gunicorn -b 0.0.0.0:5000 --access-logfile - --error-logfile - run:app
+exec gunicorn --bind unix:/tmp/beelink.socket --access-logfile - --error-logfile - run:app
