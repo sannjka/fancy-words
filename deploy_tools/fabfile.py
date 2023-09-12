@@ -1,4 +1,3 @@
-import getpass
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, put, cd, sudo
 
