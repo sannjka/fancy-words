@@ -1,7 +1,9 @@
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run, put, cd, sudo
+from fabric.api import env, local, run, put, cd, sudo, get
 
 REPO_URL = 'https://github.com/sannjka/fancy-words.git'
+FILE_NAME = local('echo dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql', capture=True)
+
 
 def deploy():
     site_folder = f'/home/{env.user}/sites/{env.host}'
@@ -46,3 +48,28 @@ def _make_nginx_conf():
         sudo(f'sudo ln -s /etc/nginx/sites-available/{env.host} '
             f'/etc/nginx/sites-enabled/{env.host}')
     sudo('sudo systemctl restart nginx')
+
+
+def backup():
+    site_folder = f'/home/{env.user}/sites/{env.host}'
+    if not exists(site_folder):
+        return
+    with cd(site_folder):
+        _make_backup()
+        _retrieve_backup()
+        _remove_backup_on_server()
+        _retrieve_static()
+
+def _make_backup():
+    run("container_name=`docker compose ps | awk '/postgres/{print $1}'` &&"
+        'docker exec -t $container_name pg_dump -c -U postgres -d postgres '
+        f'> {FILE_NAME}')
+
+def _retrieve_backup():
+    get(FILE_NAME, '../')
+
+def _remove_backup_on_server():
+    run(f'rm {FILE_NAME}')
+
+def _retrieve_static():
+    get('static/', '../')
