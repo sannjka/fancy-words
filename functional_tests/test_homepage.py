@@ -15,4 +15,3 @@ class HomePageTest(FunctionalTest):
         self.assertIn('Fancy-words', self.client.title)
         header_text = self.client.find_element(By.TAG_NAME, 'h3').text
         self.assertIn('Arbitrarily selected phrase', header_text)
-        self.fail('continue here')
