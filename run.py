@@ -1,4 +1,5 @@
 import os
+import click
 from dotenv import load_dotenv
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -22,6 +23,19 @@ def test():
     """Run the unit tests."""
     import unittest
     tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
+
+@app.cli.command('functional-test')
+@click.argument('name', required=False)
+def functional_test(name=None):
+    """Run the unit tests."""
+    import unittest
+    if name:
+        tests = unittest.TestLoader().discover(
+            'functional_tests', pattern=name + '.py'
+        )
+    else:
+        tests = unittest.TestLoader().discover('functional_tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 @app.cli.command()
