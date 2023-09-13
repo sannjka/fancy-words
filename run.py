@@ -21,22 +21,25 @@ def make_shell_context():
 @app.cli.command()
 def test():
     """Run the unit tests."""
-    import unittest
-    tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    run_tests('tests')
 
 @app.cli.command('functional-test')
 @click.argument('name', required=False)
 def functional_test(name=None):
     """Run the unit tests."""
+    run_tests('functional_tests', name)
+
+def run_tests(folder, name=None):
     import unittest
     if name:
-        tests = unittest.TestLoader().discover(
-            'functional_tests', pattern=name + '.py'
-        )
+        tests = unittest.TestLoader().discover(folder , pattern=name + '.py')
     else:
-        tests = unittest.TestLoader().discover('functional_tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+        tests = unittest.TestLoader().discover(folder)
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+    if result.wasSuccessful():
+        exit(0)
+    else:
+        exit(1)
 
 @app.cli.command()
 def deploy():
