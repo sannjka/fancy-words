@@ -23,7 +23,8 @@
         <p class="text-secondary">{{ phrase.translation }}</p>
         {% endif %}
         {% if current_user == phrase.author %}
-        <a href="{{ url_for('main.edit_phrase', phrase_id=phrase.id) }}">
+        <a href="{{ url_for('main.edit_phrase', phrase_id=phrase.id,
+                            next=next) }}">
             <button>
             Edit
             </button>
@@ -32,6 +33,12 @@
     </div>
 </div>
 <div>
+    <audio src="https://vimbox-tts.skyeng.ru/api/v1/tts?text={{ 
+      phrase_for_tts }}&lang=en&voice=female_2">
+    </audio>
+    <button id="play-icon">
+      <span class="glyphicon glyphicon-play"></span>
+    </button>
     {% if examples or current_user == phrase.author %}
         <h3>Examples:</h3>
         <ul>
@@ -75,3 +82,14 @@
 {% include '_comments.html' %}
 <div></div>
 {% endblock page_content %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    const playIconContainer = document.getElementById('play-icon');
+    const audio = document.querySelector('audio');
+    playIconContainer.addEventListener('click', () => {
+      audio.play();
+    });
+  </script>
+{% endblock scripts %}

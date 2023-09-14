@@ -47,11 +47,14 @@ def phrase_map(phrase_id):
         db.session.commit()
         flash('Your comment has been published.', 'success')
         return redirect(url_for('main.phrase_map', phrase_id=phrase_id))
+    phrase_for_tts = phrase.body.replace(' ', '+')
     return render_template('phrase_map.html', phrase=phrase,
                            wordlists=phrase.wordlists.all(),
                            examples=phrase.examples.all(),
                            comments=phrase.comments.all(),
-                           comment_form=comment_form)
+                           comment_form=comment_form,
+                           next=request.url,
+                           phrase_for_tts=phrase_for_tts)
 
 @main.route('/edit_phrase/<int:phrase_id>', methods=['GET', 'POST'])
 @login_required
@@ -60,6 +63,11 @@ def edit_phrase(phrase_id):
     if not phrase:
         return redirect(url_for('main.index'))
     form = EditPhraseForm()
+    if request.method == 'POST' and form.cancel.data:
+        next = request.args.get('next')
+        if next is None:
+            next = url_for('main.index')
+        return redirect(next)
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data, 'phrase_pictures')
@@ -112,6 +120,11 @@ def add_example(phrase_id):
 @login_required
 def add_phrase(word=''):
     form = EditPhraseForm()
+    if request.method == 'POST' and form.cancel.data:
+        next = request.args.get('next')
+        if next is None:
+            next = url_for('main.index')
+        return redirect(next)
     if form.validate_on_submit():
         phrase = Phrase(body=form.body.data,
                         transcription=form.transcription.data,

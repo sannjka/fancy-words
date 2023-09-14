@@ -17,6 +17,7 @@ class EditPhraseForm(FlaskForm):
     picture = FileField('Update Picture',
                         validators=[FileAllowed(['jpg', 'jpeg','png'])])
     submit = SubmitField('Update')
+    cancel = SubmitField('Cancel', render_kw={'formnovalidate': True})
 
 class CommentForm(FlaskForm):
     body = StringField('', validators=[DataRequired()])
