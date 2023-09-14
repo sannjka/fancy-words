@@ -204,8 +204,9 @@ def wordlist():
         page=page, per_page=current_app.config['PHRASES_PER_PAGE'],
         error_out=False)
     phrases = pagination.items
-    image_file = url_for('static',
-                     filename='profile_pictures/' + current_user.avatar_file)
+    image_file = url_for(
+        'static', filename='profile_pictures/' + wordlist.author.avatar_file
+    )
     form = None
     found_phrases = None
     if fill == 'true':
