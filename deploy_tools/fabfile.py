@@ -11,12 +11,12 @@ def deploy():
     with cd(site_folder):
         _get_latest_source_code(site_folder)
         _create_directory_structure_id_necessary()
+        _update_boot_sh()
         _update_virtualenv()
         _update_static_files()
         _create_or_update_donenv()
         _run_docker_compose()
         _make_nginx_conf()
-        _update_boot_sh()
 
 def _create_directory_structure_id_necessary():
     pass
@@ -40,7 +40,8 @@ def _create_or_update_donenv():
     put('../.env-postgres', './')
 
 def _run_docker_compose():
-    run('docker-compose up -d --build')
+    sudo('chmod -R 755 db-data')
+    run('docker compose up -d --build')
 
 def _make_nginx_conf():
     sudo(f'sed "s/SITENAME/{env.host}/g" deploy_tools/nginx.template.conf |'
