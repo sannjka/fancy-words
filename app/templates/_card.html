@@ -18,6 +18,7 @@
         {% endif %}
         {% if wordlist %}
         <div>
+          {% if current_user == phrase.author %}
             {% if wordlist not in phrase.wordlists.all() %}
                 <a href="{{ url_for('main.add_to_wordlist',
                                     phrase_id=phrase.id,
@@ -31,6 +32,7 @@
                                     next=next) }}">
                     <button>remove from list</button></a>
             {% endif %}
+          {% endif %}
         </div>
         {% endif %}
     </div>
