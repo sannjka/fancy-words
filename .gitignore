@@ -5,6 +5,7 @@ env
 .DS_Store
 .venv
 *.swp
+*.swo
 *.log
 *.sqlite
 # Environment files
