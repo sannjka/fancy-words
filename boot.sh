@@ -7,4 +7,4 @@ while true; do
     echo Deploy command failed, retrying in 5 secs...
     sleep 5
 done
-exec gunicorn --bind unix:/tmp/beelink.socket --access-logfile - --error-logfile - run:app
+exec gunicorn --bind unix:/tmp/SITENAME.socket --access-logfile - --error-logfile - run:app

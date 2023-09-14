@@ -16,6 +16,7 @@ def deploy():
         _create_or_update_donenv()
         _run_docker_compose()
         _make_nginx_conf()
+        _update_boot_sh()
 
 def _create_directory_structure_id_necessary():
     pass
@@ -49,6 +50,8 @@ def _make_nginx_conf():
             f'/etc/nginx/sites-enabled/{env.host}')
     sudo('sudo systemctl restart nginx')
 
+def _update_boot_sh():
+    sed('boot.sh', 'SITENAME', env.host)
 
 def backup():
     site_folder = f'/home/{env.user}/sites/{env.host}'
