@@ -45,7 +45,7 @@
         {% for example in examples %}
             <li>
             <p>
-              {{ example.body }}
+              {{ example.get_presentation() | safe }}
               <a href="{{ url_for(
                 'main.edit_example', example_id=example.id, phrase_id=phrase.id
               ) }}">

@@ -1,8 +1,9 @@
 import reprlib
 from datetime import datetime
-from flask import current_app
+from flask import current_app, url_for
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from sqlalchemy.sql import func
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import db, login_manager
@@ -173,3 +174,18 @@ class Example(db.Model):
         ).all()
         already_linked = phrase.examples.all()
         return set(all_relevant) - set(already_linked)
+
+    def get_phrases_found_in_example(self):
+        textual_sql = text(
+            "SELECT * FROM phrases "
+            f"WHERE '{self.body}' LIKE '%' || body || '%'"
+        )
+        return set(Phrase.query.from_statement(textual_sql).all())
+
+    def get_presentation(self):
+        presentation = self.body
+        for phrase in  self.get_phrases_found_in_example():
+            url = url_for('main.phrase_map', phrase_id=phrase.id)
+            replacement = f'<a href="{url}">{phrase.body}</a>'
+            presentation = presentation.replace(phrase.body, replacement)
+        return presentation
