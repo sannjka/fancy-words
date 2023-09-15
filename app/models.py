@@ -176,9 +176,10 @@ class Example(db.Model):
         return set(all_relevant) - set(already_linked)
 
     def get_phrases_found_in_example(self):
+        body = self.body.replace("'", "''")
         textual_sql = text(
             "SELECT * FROM phrases "
-            f"WHERE '{self.body}' LIKE '%' || body || '%'"
+            rf"WHERE '{body}' LIKE '%' || body || '%'"
         )
         return set(Phrase.query.from_statement(textual_sql).all())
 
