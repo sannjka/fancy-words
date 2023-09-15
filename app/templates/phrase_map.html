@@ -44,7 +44,16 @@
         <ul>
         {% for example in examples %}
             <li>
-            <p>{{ example.body }}</p>
+            <p>
+              {{ example.body }}
+              <a href="{{ url_for(
+                'main.edit_example', example_id=example.id, phrase_id=phrase.id
+              ) }}">
+                <button type="button">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+              </a>
+            </p>
             </li>
         {% endfor %}
         {% if current_user == phrase.author %}

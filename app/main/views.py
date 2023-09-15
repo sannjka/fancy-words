@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from . import main
 from .. import db
 from ..models import Phrase, Comment, Example, WordList, User
-from .forms import (SearchForm, CommentForm, EditPhraseForm, AddExampleForm,
+from .forms import (SearchForm, CommentForm, EditPhraseForm, EditExampleForm,
                     SelectExampleForm, AddWordListForm)
 from ..profile.utils import save_picture
 
@@ -100,7 +100,7 @@ def add_example(phrase_id):
         form.select.choices = [(s.id, s.body)
             for s in chain([Record(None, '')], suggestions)]
     else:
-        form = AddExampleForm()
+        form = EditExampleForm()
     if form.validate_on_submit():
         if form.example.data:
             example = Example(body=form.example.data)
@@ -114,6 +114,21 @@ def add_example(phrase_id):
         return redirect(url_for('main.phrase_map', phrase_id=phrase_id))
     return render_template('add_example.html', form=form, phrase=phrase,
                            suggestions=suggestions)
+
+@main.route('/edit_example/<int:example_id>', methods=['GET', 'POST'])
+@login_required
+def edit_example(example_id):
+    phrase_id = request.args.get('phrase_id')
+    phrase = Phrase.query.get(phrase_id)
+    example = Example.query.get(example_id)
+    form = EditExampleForm()
+    if form.validate_on_submit():
+        example.body = form.example.data
+        db.session.commit()
+        return redirect(url_for('main.phrase_map', phrase_id=phrase_id))
+    form.example.data = example.body
+    return render_template('add_example.html', form=form, phrase=phrase,
+                           suggestions=None)
 
 @main.route('/add_phrase/<word>', methods=['GET', 'POST'])
 @main.route('/add_phrase/', methods=['GET', 'POST'])

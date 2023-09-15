@@ -13,8 +13,8 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     FW_MAIL_SUBJECT_PREFIX = '[Fancy-Words]'
     FW_MAIL_SENDER = 'Facy-Words <fancy-words@fancy-words.ru>'
-    PHRASES_PER_PAGE = 2
-    WORDLISTS_PER_PAGE = 2
+    PHRASES_PER_PAGE = 5
+    WORDLISTS_PER_PAGE = 5
 
     @staticmethod
     def init_app(app):

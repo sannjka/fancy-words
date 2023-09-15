@@ -16,16 +16,16 @@ class EditPhraseForm(FlaskForm):
     translation = StringField('Translation', validators=[DataRequired()])
     picture = FileField('Update Picture',
                         validators=[FileAllowed(['jpg', 'jpeg','png'])])
-    submit = SubmitField('Update')
+    submit = SubmitField('Save')
     cancel = SubmitField('Cancel', render_kw={'formnovalidate': True})
 
 class CommentForm(FlaskForm):
     body = StringField('', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
-class AddExampleForm(FlaskForm):
+class EditExampleForm(FlaskForm):
     example = TextAreaField('', validators=[Regexp('[A-Za-z\s-]*')])
-    submit = SubmitField('Add')
+    submit = SubmitField('Save')
 
 class SelectExampleForm(FlaskForm):
     select = SelectField('', validate_choice=False)
@@ -35,4 +35,4 @@ class SelectExampleForm(FlaskForm):
 class AddWordListForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(),
                                              Regexp('[A-Za-z\s-]*')])
-    submit = SubmitField('Update')
+    submit = SubmitField('Save')
