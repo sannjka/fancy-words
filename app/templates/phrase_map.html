@@ -46,10 +46,10 @@
             <li>
             <p>
               {{ example.get_presentation() | safe }}
+              {% if current_user == phrase.author %}
               <a href="{{ url_for(
                 'main.edit_example', example_id=example.id, phrase_id=phrase.id
               ) }}">
-              {% if current_user == phrase.author %}
                 <button type="button">
                   <span class="glyphicon glyphicon-pencil"></span>
                 </button>
