@@ -3,10 +3,11 @@ services:
   fancywords:
     build: 
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./local_Dockerfile
     volumes:
       - ./static/:/home/FancyWords/app/static/
-      - /tmp/:/tmp/
+    ports:
+      - "8003:5000"
     env_file: .env
     links:
       - postgres:postgres
