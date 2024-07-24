@@ -1,3 +1,4 @@
+import json
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 #from . import profile
@@ -21,6 +22,7 @@ def draw_svg(phrase_id):
 @paint.route('/paint/get_figure', methods=['GET', 'POST'])
 def get_figure():
     coordinates = request.args.get('coord')
-    figure_tag = get_figure_tag(coordinates)
-    #print('parameter', coordinates)
+    json_coord = json.loads(coordinates)
+    x, y = json_coord.get('x'), json_coord.get('y')
+    figure_tag = get_figure_tag(x, y)
     return jsonify({'fig': figure_tag})

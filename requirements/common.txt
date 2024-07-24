@@ -27,3 +27,4 @@ Werkzeug==2.3.6
 WTForms==3.0.1
 zipp==3.16.2
 python-dotenv==1.0.0
+numpy==2.0.0

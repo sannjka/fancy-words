@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 from config import config
+#import keras
 
 
 bootstrap = Bootstrap()
@@ -13,6 +14,8 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 mail = Mail()
 moment = Moment()
+
+#nn_model = keras.saving.load_model('app/paint/nn/model.keras')
 
 def create_app(config_name):
     app = Flask(__name__)
