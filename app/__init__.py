@@ -35,5 +35,8 @@ def create_app(config_name):
     from .profile import profile as profile_blueprint
     app.register_blueprint(profile_blueprint)
 
+    from .paint import paint as paint_blueprint
+    app.register_blueprint(paint_blueprint)
+
     return app
 

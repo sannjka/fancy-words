@@ -30,6 +30,12 @@
             </button>
         </a>
         {% endif %}
+        <a href="{{ url_for('paint.draw_svg', phrase_id=phrase.id,
+                            next=next) }}">
+            <button>
+            Draw SVG
+            </button>
+        </a>
     </div>
 </div>
 <div>
