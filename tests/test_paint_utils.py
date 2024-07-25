@@ -13,17 +13,6 @@ class PaintUtilsTestCase(unittest.TestCase):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
-        #db.create_all()
-        #self.client = self.app.test_client(use_cookies=True)
-        ## creating some data for tests
-        #u = User(password='cat')
-        #p = Phrase(body='inextricably intertwined',
-        #           translation='неразрывно связанный',
-        #           author=u)
-        #db.session.add(u)
-        #db.session.add(p)
-        #db.session.commit()
-        #self.phrase_id = p.id
 
     def tearDown(self):
         db.session.remove()

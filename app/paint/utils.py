@@ -1,21 +1,14 @@
 from flask import  url_for
 import numpy as np
-#from app import nn_model
+from app import nn_model
 
-#def get_model():
-#    path = keras.utils.get_file(
-#            origin=url_for('static', filename='model.keras'),
-#            extract=True
-#    )
-#    model = keras.saving.load_model(path)
-#    return model
 
 def get_figure_tag(x, y):
     x, y = np.array(x), np.array(y)
     xs, ys, scale, xm, ym = scale_coordinates(x, y)
     r = np.array([xs, ys]).T
     ar = figure2ndarray(r)
-    #output = nn_model.predict(ar[None, ...])
+    output = nn_model.predict(ar[None, ...], verbose=0)
     #print(output)
 
     return '<g class="deletable">'
@@ -36,7 +29,6 @@ def scale_coordinates(x, y):
     # чтобы фигура с запасом помещалась в поле 30 x 30
     x_scaled = x / scale
     y_scaled = y / scale
-
     x_scaled_med = (x_scaled.max() + x_scaled.min()) / 2
     y_scaled_med = (y_scaled.max() + y_scaled.min()) / 2
     x_centered = x_scaled - x_scaled_med + 15
