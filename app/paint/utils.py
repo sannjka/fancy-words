@@ -8,11 +8,126 @@ def get_figure_tag(x, y):
     xs, ys, scale, xm, ym = scale_coordinates(x, y)
     r = np.array([xs, ys]).T
     ar = figure2ndarray(r)
-    output = nn_model.predict(ar[None, ...], verbose=0)
-    #print(output)
+    prediction = nn_model.predict(ar[None, ...], verbose=0)
+    #print(prediction)
+    figure_index = np.argmax(prediction[0])
 
-    return '<g class="deletable">'
+    coordinates = prediction[1].reshape(4, 2)
+    if figure_index == 0:
+        figure_tag = get_bezier_tag(coordinates)
+    elif figure_index == 1:
+        figure_tag = get_triangle_tag(coordinates)
+    elif figure_index == 2:
+        figure_tag = get_rectangle_tag(coordinates)
+    elif figure_index == 3:
+        figure_tag = get_ellipse_tag(coordinates)
 
+    #print(figure_tag)
+    #print(prediction[1].reshape(4, 2))
+
+    return figure_tag
+
+def get_bezier_tag(c):
+    """
+    q - second and third points get difference with the first one
+    Q - all values are absolute
+    """
+    output = f'''
+          <g class="deletable">
+            <path class="deletable line"
+                d="M {c[0, 0]} {c[0, 1]}
+                Q {c[1, 0]} {c[1, 1]}
+                {c[2, 0]} {c[2, 1]}"
+                fill="none"
+                stroke="red"
+                stroke-width="5"
+                />
+            <path
+                d="M {c[0, 0]} {c[0, 1]}
+                Q {c[1, 0]} {c[1, 1]}
+                {c[2, 0]} {c[2, 1]}"
+                fill="none"
+                stroke="green"
+                stroke-width="20"
+                stroke-opacity="0"/>
+          </g>
+    '''
+    return output
+
+def get_triangle_tag(c):
+    output = f'''
+          <g class="deletable">
+            <path class="deletable line"
+                d="M {c[0, 0]} {c[0, 1]}
+                L {c[1, 0]} {c[1, 1]}
+                L {c[2, 0]} {c[2, 1]} Z"
+                fill="none"
+                stroke="red"
+                stroke-width="5"
+                />
+            <path
+                d="M {c[0, 0]} {c[0, 1]}
+                L {c[1, 0]} {c[1, 1]}
+                L {c[2, 0]} {c[2, 1]} Z"
+                fill="none"
+                stroke="green"
+                stroke-width="20"
+                stroke-opacity="0"/>
+          </g>
+    '''
+    return output
+
+def get_rectangle_tag(c):
+    output = f'''
+          <g class="deletable">
+            <path class="deletable line"
+                d="M {c[0, 0]} {c[0, 1]}
+                L {c[1, 0]} {c[1, 1]}
+                L {c[2, 0]} {c[2, 1]}
+                L {c[3, 0]} {c[3, 1]} Z"
+                fill="none"
+                stroke="red"
+                stroke-width="5"
+                />
+            <path
+                d="M {c[0, 0]} {c[0, 1]}
+                L {c[1, 0]} {c[1, 1]}
+                L {c[2, 0]} {c[2, 1]}
+                L {c[3, 0]} {c[3, 1]} Z"
+                fill="none"
+                stroke="green"
+                stroke-width="20"
+                stroke-opacity="0"/>
+          </g>
+    '''
+    return output
+
+def get_ellipse_tag(c):
+    '''
+    При обучении модели угол поворота масштабировался к диапазону [0..15]
+    При этом значения в радианах находились в диапазоне [-pi/2..pi/2]
+    '''
+    output = f'''
+          <g class="deletable">
+            <ellipse class="deletable line"
+                rx="{c[1, 0]}" ry="{c[1, 1]}" cx="{c[0, 0]}" cy="{c[0, 1]}"
+                transform="rotate({c[2, 0] / 15 * np.pi / 2}), translate(0, 0)"
+                transform-origin="50% 50%"
+                fill="none"
+                stroke="red"
+                stroke-width="5"
+                />
+            <ellipse
+                rx="12" ry="8" cx="15" cy="15"
+                transform="rotate({c[2, 0] / 15 * np.pi / 2}), translate(0, 0)"
+                transform-origin="50% 50%"
+                fill="none"
+                stroke="green"
+                stroke-width="8"
+                stroke-opacity="0.5"/>
+          </g>
+    '''
+    return output
 
 def figure2ndarray(r):
     im = np.zeros((30, 30))
