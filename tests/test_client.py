@@ -93,5 +93,6 @@ class FlaskClientTestCase(unittest.TestCase):
                 ))
 
         self.assertEqual(response.status_code, 200)
+        self.assertTrue('fig'  in response.get_data(as_text=True))
         self.assertTrue('<g class='  in response.get_data(as_text=True))
         self.assertTrue('deletable'  in response.get_data(as_text=True))

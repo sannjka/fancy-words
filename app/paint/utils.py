@@ -13,6 +13,9 @@ def get_figure_tag(x, y):
     figure_index = np.argmax(prediction[0])
 
     coordinates = prediction[1].reshape(4, 2)
+
+    # Here we need to scale back coordinates !!!
+
     if figure_index == 0:
         figure_tag = get_bezier_tag(coordinates)
     elif figure_index == 1:
