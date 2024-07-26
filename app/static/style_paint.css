@@ -1,0 +1,125 @@
+* {margin: 0; padding: 0;}
+
+canvas {
+    display: block;
+}
+
+#svgcanvas {
+    position: absolute;
+    opacity: 0.5;
+
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    align-items: stretch;
+}
+
+.trash {
+    fill: gray;
+    position: absolute;
+    width: 5vw;
+    height: 5vw;
+    left: 72vw;
+    margin: 10px 10px 10px 10px;
+}
+
+.broom {
+    fill: gray;
+    position: absolute;
+    width: 5vw;
+    height: 5vw;
+    left: 72vw;
+    margin: 10px 10px 10px 10px;
+}
+
+@media (hover: hover) {
+    .trash:hover {
+        fill: red;
+    }
+    .broom:hover {
+        fill: red;
+    }
+
+    .deletable:hover {
+        cursor:pointer;
+    }
+
+    .icon:hover {
+        fill: green;
+        stroke: green;
+    }
+}
+
+.icon {
+    margin: 1vw 1vw 1vw 1vw;
+    width: 3vw;
+    height: 3vw;
+    fill: black;
+}
+
+#sketch {
+    position: absolute;
+    width: 80vw;
+    height: 80vh;
+    opacity: 0.2;
+    object-fit: contain;
+    z-index: -1;
+}
+
+#tools {
+    position: absolute;
+    top: 80vh;
+    width: 80vw;
+    display: flex;
+    flex-direction: row;
+}
+
+.tools-width {
+    height: 6vw;
+}
+
+.tools-height {
+    height: 6vw;
+}
+
+.dropright:hover .dropbtn {
+    background-color: #2980B9;
+}
+
+.dropright:hover .dropright-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.dropright:focus .dropright-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.dropright-content {
+    display: none;
+    flex-direction: row;
+}
+
+.tool {
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 1vw;
+}
+
+.tool-width {
+    width: 5vw;
+    height: 5vw;
+}
+
+.tool-height {
+    width: 5vh;
+    height: 5vh;
+}

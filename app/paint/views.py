@@ -20,12 +20,9 @@ def draw_svg(phrase_id):
 def get_figure():
     if request.is_json:
         coordinates = request.json
-        print(type(coordinates))
-        print('json', coordinates)
         x, y = coordinates['x'], coordinates['y']
     else:
         coordinates = request.args.get('coord')
-        print('coord:', coordinates)
         json_coord = json.loads(coordinates)
         x, y = json_coord.get('x'), json_coord.get('y')
     figure_tag = get_figure_tag(x, y)

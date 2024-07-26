@@ -1,17 +1,11 @@
 {% extends "base.html" %}
-{#
-так оформляется комментарий
-<!--
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block scripts %}
 {{ super() }}
-<script type="text/javascript">
-    {% include "{{ url_for('static', filename='js/main.js') }}" %}
-</script>
+    <script>
+        const paint_get_figure_url = {{ url_for('paint.get_figure')|tojson }};
+    </script>
 {% endblock %}
--->
-#}
 
 {% block title %}
 {% if title %}

@@ -16,7 +16,7 @@ db-data
 *.jpg
 *.jpeg
 *.png
-static
+/static
 *.sql
 screendumps
 .venv39
