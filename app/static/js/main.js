@@ -5,6 +5,10 @@ window.onload = () => {
     const svg = document.getElementById('svgcanvas');
     const trash = document.getElementById('trash');
     const broom = document.getElementById('broom');
+    const sketch = document.getElementById('sketch');
+    if (local == 0) {
+        sketch.style.visibility = 'hidden';
+    }
 
     var posX = [],
         posY = [],
@@ -24,7 +28,7 @@ window.onload = () => {
         svg.onmousemove = (e) => recordMousePos(e);
     });
 
-    // касание экрана сенсорного экрана
+    // касание сенсорного экрана
     svg.addEventListener("touchstart", (e) => {
         e.preventDefault();
         unselectAll();
@@ -35,7 +39,10 @@ window.onload = () => {
     svg.addEventListener("mouseup", () => stopDrawing());
     svg.addEventListener("touchend", () => stopDrawing());
 
-    svg.addEventListener("click", (event) => {
+    // когда мышь покинула элемент
+    svg.addEventListener("mouseleave", () => resetDrawing());
+
+    svg.addEventListener("click", (e) => {
         unselectAll();
         svg.ontouchmove = (e) => recordMousePos(e);
     })
@@ -77,7 +84,8 @@ window.onload = () => {
         if (Math.abs(posX[0] - posX.at(-1)) < 2
             && Math.abs(posY[0] - posY.at(-1)) < 2) return;
 
-        fetch( paint_get_figure_url , {
+        fetch( paint_get_figure_url, {
+              cache: 'reload',
               method: 'POST',
               headers: {
                       'Content-Type': 'application/json;charset=utf-8'
@@ -87,26 +95,31 @@ window.onload = () => {
         .then((response) => response.json())
         .then(function(json) {
             svg.innerHTML += json.fig;
+            collectElements();
+            uniqueId = new Date().getTime();
+            if (local == 1) {
+                sketch.src = `${sketch_url}?${uniqueId}`;
+            }
         });
         
-        const content = `
-          <g class="deletable">
-            <line class="deletable line"
-                x1="${posX[0]}" y1="${posY[0]}"
-                x2="${posX.at(-1)}" y2="${posY.at(-1)}"
-                stroke="red"
-                stroke-width="5"
-                />
-            <line
-                x1="${posX[0]}" y1="${posY[0]}"
-                x2="${posX.at(-1)}" y2="${posY.at(-1)}"
-                stroke="green"
-                stroke-width="20"
-                stroke-opacity="0"/>
-          </g>
-        `;
-        svg.innerHTML += content;
-        collectElements();
+        //const content = `
+        //  <g class="deletable">
+        //    <line class="deletable line"
+        //        x1="${posX[0]}" y1="${posY[0]}"
+        //        x2="${posX.at(-1)}" y2="${posY.at(-1)}"
+        //        stroke="red"
+        //        stroke-width="5"
+        //        />
+        //    <line
+        //        x1="${posX[0]}" y1="${posY[0]}"
+        //        x2="${posX.at(-1)}" y2="${posY.at(-1)}"
+        //        stroke="green"
+        //        stroke-width="20"
+        //        stroke-opacity="0"/>
+        //  </g>
+        //`;
+        //svg.innerHTML += content;
+        //collectElements();
     }
 
     function drawSVGPolyLine() {}
@@ -173,7 +186,14 @@ window.onload = () => {
     function stopDrawing() {
         
         drawSVGLine();
+        resetDrawing();
+    }
+    
+    // сброс рисования (выход за поле рисования) 
+    function resetDrawing() {
+        
         svg.onmousemove = null;
+        svg.ontouchmove = null;
         posX = [];
         posY = [];
     }

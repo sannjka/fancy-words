@@ -1,3 +1,4 @@
+import os
 import json
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
@@ -10,11 +11,12 @@ from .utils import get_figure_tag
 @paint.route('/paint/<int:phrase_id>', methods=['GET', 'POST'])
 #@login_required
 def draw_svg(phrase_id):
+    local = os.environ.get('PAINT_LOCAL', 0)
     phrase = Phrase.query.get(phrase_id)
     image_file = url_for('static',
                      filename='phrase_pictures/' + phrase.image_file)
     return render_template('paint.html', title='Fancy-words-paint',
-                           phrase=phrase, image_file=image_file)
+                           phrase=phrase, image_file=image_file, local=local)
 
 @paint.route('/paint/get_figure', methods=['GET', 'POST'])
 def get_figure():

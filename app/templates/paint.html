@@ -4,6 +4,8 @@
 {{ super() }}
     <script>
         const paint_get_figure_url = {{ url_for('paint.get_figure')|tojson }};
+        const sketch_url = {{ url_for('static', filename='temp.png')|tojson }};
+        const local = {{ local }};
     </script>
 {% endblock %}
 
@@ -38,7 +40,7 @@ FW - Fancy-words-paint
        <circle id="circle" cx="40" cy="40" r="35"/>
      </g>
    </svg> 
-   <img src="{{ url_for('static', filename='sketch2.jpg') }}" id="sketch">
+   <img src="{{ url_for('static', filename='temp.png') }}" id="sketch">
    <svg id="trash" class="trash" viewBox="0 0 512 512">
      <g>
        <path d="M490.667,96c0-17.673-14.327-32-32-32h-80.555

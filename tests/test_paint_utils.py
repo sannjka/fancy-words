@@ -17,7 +17,7 @@ class PaintUtilsTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_figure2ndarray(self):
-        r = np.array([x, y]).T
+        r = np.array([x, y]).astype(np.uint8)
         ndarray = utils.figure2ndarray(r)
         self.assertEqual(ndarray.shape, (30, 30))
 
