@@ -2,41 +2,59 @@ import os
 from flask import  url_for, current_app
 import numpy as np
 from PIL import Image
-from app import nn_model
+from app import (
+    nn_model, nn_model_class, nn_model_0, nn_model_1, nn_model_2, nn_model_3
+)
+from config import one_model
 
 
 def get_figure_tag(x, y):
     x, y = np.array(x), np.array(y)
 
-    xs, ys, scale, xm, ym = scale_coordinates(x, y)
+    xs, ys, *others = scale_coordinates(x, y)
     r = np.array([xs, ys]).astype(np.uint8)
     ar = figure2ndarray(r)
 
     # display picture for debugging
+    display_picture_for_debugging(ar)
+
+    figure_index, coordinates = predict_figure(ar)
+    coordinates = process_new_figure_coordinates(
+        figure_index, coordinates, others, x, y)
+    figure_tag = coordinates2tag(figure_index, coordinates)
+
+    return figure_tag
+
+def display_picture_for_debugging(ar):
     local = os.environ.get('PAINT_LOCAL', 0)
     if local == '1':
         im = Image.fromarray(ar.astype(np.uint8) * 255)
         picture_path = os.path.join(current_app.root_path,
-                                    'static',
-                                    'temp.png')
+                                    'static', 'temp.png')
         im.save(picture_path)
 
-    prediction = nn_model.predict(ar[None, ...], verbose=0)
-    figure_index = np.argmax(prediction[0])
-
-    coordinates = prediction[1].reshape(4, 2)
-    xscaled, yscaled = coordinates[:, 0], coordinates[:, 1]
-    if figure_index == 3:
-        xback, yback = scale_back_coordinates_ellipse(
-            xscaled, yscaled, scale, xm, ym
-        )
+def predict_figure(ar):
+    if one_model:
+        prediction = nn_model.predict(ar[None, ...], verbose=0)
+        figure_index = np.argmax(prediction[0])
+        coordinates = prediction[1].reshape(4, 2)
     else:
-        xback, yback = scale_back_coordinates(xscaled, yscaled, scale, xm, ym)
-    coordinates = np.array([xback, yback]).T
+        prediction_class = nn_model_class.predict(ar[None, ...], verbose=0)
+        figure_index = np.argmax(prediction_class[0])
+        if figure_index == 0:
+            coordinates = nn_model_0.predict(ar[None, ...], verbose=0)
+        if figure_index == 1:
+            coordinates = nn_model_1.predict(ar[None, ...], verbose=0)
+        if figure_index == 2:
+            coordinates = nn_model_2.predict(ar[None, ...], verbose=0)
+        if figure_index == 3:
+            coordinates = nn_model_3.predict(ar[None, ...], verbose=0)
+        if figure_index == 4:
+            coordinates = np.zeros((1, 8))
+        coordinates = coordinates[0].reshape(4, 2)
+    return figure_index, coordinates
 
-    # we want to put start point of the figure to start point of x, y
-    move_to_start_point(coordinates, figure_index, x, y)
-
+def coordinates2tag(figure_index, coordinates):
     if figure_index == 0:
         figure_tag = get_bezier_tag(coordinates)
     elif figure_index == 1:
@@ -47,7 +65,6 @@ def get_figure_tag(x, y):
         figure_tag = get_ellipse_tag(coordinates)
     elif figure_index == 4:
         figure_tag = get_straight_tag(coordinates)
-
     return figure_tag
 
 def get_bezier_tag(c):
@@ -189,18 +206,24 @@ def scale_coordinates(x, y):
     y_scaled_med = (y_scaled.max() + y_scaled.min()) / 2
     x_centered = x_scaled - x_scaled_med + 15
     y_centered = y_scaled - y_scaled_med + 15
-    return x_centered, y_centered, scale, x_scaled_med, y_scaled_med
+    return x_centered, y_centered, scale, x_scaled_med, y_scaled_med,\
+            x_len, y_len, x_min, y_min
 
 def scale_back_coordinates(
-        x_centered, y_centered, scale, x_scaled_med, y_scaled_med
-    ):
-    x = (x_centered - 15 + x_scaled_med) * scale
-    y = (y_centered - 15 + y_scaled_med) * scale
+            x_predicted, y_predicted, scale, x_scaled_med, y_scaled_med,
+            x_len, y_len, x_min, y_min
+        ):
+    x_min_predicted, x_max_predicted = x_predicted.min(), x_predicted.max()
+    y_min_predicted, y_max_predicted = y_predicted.min(), y_predicted.max()
+    x_len_predicted = x_max_predicted - x_min_predicted
+    y_len_predicted = y_max_predicted - y_min_predicted
+    x = (x_predicted - x_min_predicted) / x_len_predicted * x_len + x_min
+    y = (y_predicted - y_min_predicted) / y_len_predicted * y_len + y_min
     return x, y
 
 def scale_back_coordinates_ellipse(
-        x_centered, y_centered, scale, x_scaled_med, y_scaled_med
-    ):
+            x_centered, y_centered, scale, x_scaled_med, y_scaled_med
+        ):
     x, y = x_centered, y_centered
     x[0] = (x_centered[0] - 15 + x_scaled_med) * scale
     y[0] = (y_centered[0] - 15 + y_scaled_med) * scale
@@ -253,3 +276,18 @@ def move_to_start_point_ellipse(coordinates, x, y):
 
     coordinates[0] = coordinates[0] - (r[ind] - np.array([x[0], y[0]]))
 
+def process_new_figure_coordinates(figure_index, coordinates, others, x, y):
+    scale, xm, ym, x_len, y_len, x_min, y_min = others
+    xscaled, yscaled = coordinates[:, 0], coordinates[:, 1]
+    if figure_index == 3:
+        xback, yback = scale_back_coordinates_ellipse(
+            xscaled, yscaled, scale, xm, ym)
+    else:
+        xback, yback = scale_back_coordinates(
+            xscaled, yscaled, scale, xm, ym, x_len, y_len, x_min, y_min)
+    coordinates = np.array([xback, yback]).T
+
+    # we want to put start point of the figure to start point of x, y
+    move_to_start_point(coordinates, figure_index, x, y)
+    coordinates = coordinates.round(0)
+    return coordinates

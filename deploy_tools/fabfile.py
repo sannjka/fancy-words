@@ -22,10 +22,17 @@ def _create_directory_structure_id_necessary():
     pass
 
 def _get_latest_source_code(site_folder):
-    if exists('.git'):
-        run('git fetch')
+    if (br := env.get("branch")):
+        if exists('.git'):
+            run(f'git fetch origin {br}')
+            run(f'git checkout {br}')
+        else:
+            run(f'git clone -b {br} {REPO_URL} {site_folder}')
     else:
-        run(f'git clone {REPO_URL} {site_folder}')
+        if exists('.git'):
+            run('git fetch')
+        else:
+            run(f'git clone {REPO_URL} {site_folder}')
     current_commit = local('git log -n 1 --format=%H', capture=True)
     run(f'git reset --hard {current_commit}')
 

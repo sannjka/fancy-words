@@ -50,7 +50,7 @@ class PaintUtilsTestCase(unittest.TestCase):
     def test_scale_coordinates(self):
         x = np.array([0, 50, 100])
         y = np.array([200, 210, 220])
-        x_scaled, y_scaled, _, _, _ = utils.scale_coordinates(x, y)
+        x_scaled, y_scaled, *_ = utils.scale_coordinates(x, y)
         self.assertTrue(np.allclose(x_scaled, np.array([ 2.5, 15. , 27.5])))
         self.assertTrue(np.allclose(y_scaled, np.array([12.5, 15. , 17.5])))
 
@@ -60,8 +60,13 @@ class PaintUtilsTestCase(unittest.TestCase):
         scale = 4
         x_scaled_med = 12.5
         y_scaled_med = 52.5
+        x_len = 100
+        y_len = 20
+        x_min = 0
+        y_min = 200
         x, y = utils.scale_back_coordinates(
-            x_scaled, y_scaled, scale, x_scaled_med, y_scaled_med
+            x_scaled, y_scaled, scale, x_scaled_med, y_scaled_med,
+            x_len, y_len, x_min, y_min
         )
         self.assertTrue(np.allclose(x, np.array([0, 50, 100])))
         self.assertTrue(np.allclose(y, np.array([200, 210, 220])))

@@ -16,6 +16,11 @@ mail = Mail()
 moment = Moment()
 
 nn_model = keras.saving.load_model('app/paint/nn/model.keras')
+nn_model_class = keras.saving.load_model('app/paint/nn/model_class.keras')
+nn_model_0 = keras.saving.load_model('app/paint/nn/model_0.keras') # bezier
+nn_model_1 = keras.saving.load_model('app/paint/nn/model_1.keras') # triangle
+nn_model_2 = keras.saving.load_model('app/paint/nn/model_2.keras') # rectangle
+nn_model_3 = keras.saving.load_model('app/paint/nn/model_3.keras') # ellipse
 
 def create_app(config_name):
     app = Flask(__name__)
