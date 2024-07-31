@@ -70,13 +70,16 @@ window.onload = () => {
         let curPos;
         if (e.type == 'touchmove'){
             curPos= e.touches[0];
+
+            let r = svg.getBoundingClientRect();
+            posX.push(curPos.clientX - r.left);
+            posY.push(curPos.clientY - r.top);
         } else if (e.type == 'mousemove'){
             curPos= e;
-        }
 
-        posX.push(curPos.offsetX);
-        posY.push(curPos.offsetY);
-        
+            posX.push(curPos.offsetX);
+            posY.push(curPos.offsetY);
+        }
     }
 
     function drawSVGLine() {
@@ -184,7 +187,6 @@ window.onload = () => {
 
     // остановка рисования
     function stopDrawing() {
-        
         drawSVGLine();
         resetDrawing();
     }
