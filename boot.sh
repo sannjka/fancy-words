@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 while true; do
     flask deploy
     if [[ "$?" == "0" ]]; then
